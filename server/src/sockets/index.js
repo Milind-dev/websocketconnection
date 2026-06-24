@@ -5,6 +5,7 @@ const initializeSocket = (server) => {
 
   wss.on("connection", (socket) => {
     console.log("Client Connected");
+    console.log("Current Clients:", wss.clients.size);
 
     socket.send(
       JSON.stringify({
@@ -13,15 +14,45 @@ const initializeSocket = (server) => {
       }),
     );
 
-    socket.on("message", (message) => {
-      console.log("Received:", message.toString());
+    //single tab
+    // socket.on("message", (message) => {
+    //   console.log("Received:", message.toString());
 
-      socket.send(
-        JSON.stringify({
-          type: "MESSAGE",
-          message: message.toString(),
-        }),
-      );
+    //   socket.send(
+    //     JSON.stringify({
+    //       type: "MESSAGE",
+    //       message: message.toString(),
+    //     }),
+    //   );
+    // });
+
+    //two tab
+    // socket.on("message", (message) => {
+    //   console.log("Received:", message.toString());
+
+    //   wss.clients.forEach((client) => {
+    //     client.send(
+    //       JSON.stringify({
+    //         type: "MESSAGE",
+    //         message: message.toString(),
+    //       }),
+    //     );
+    //   });
+    // });
+
+    socket.on("message", (message) => {
+      console.log("Total Clients:", wss.clients.size);
+
+      wss.clients.forEach((client) => {
+        console.log("Sending to client");
+
+        client.send(
+          JSON.stringify({
+            type: "MESSAGE",
+            message: message.toString(),
+          }),
+        );
+      });
     });
 
     socket.on("close", () => {
